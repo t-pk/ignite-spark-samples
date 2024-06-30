@@ -23,7 +23,7 @@ services:
 
   spark-master:
     image: apache/spark:latest
-    container_name: apache-spark-master
+    container_name: spark-master
     command: "/opt/spark/bin/spark-class org.apache.spark.deploy.master.Master --host spark-master"
     ports:
       - "8080:8080"  # Spark web UI
@@ -34,12 +34,17 @@ services:
       - SPARK_NETWORK_CRYPTO_ENABLED=false
       - SPARK_RPC_MESSAGE_MAX_SIZE=512  # Set to a higher value as needed
       - SPARK_MAX_REMOTE_BLOCK_SIZE_FETCH_TO_MEM=134217728  # 128MB
+      # - SPARK_LOCAL_IP=spark-master
+      # - SPARK_MASTER_IP=spark-master
+      # - SPARK_MASTER_HOST=spark-master
+      # - SPARK_DRIVER_BIND_ADDRESS=spark-master
+      - SPARK_PUBLIC_DNS=spark-net
     networks:
       - spark-net
 
   spark-worker:
     image: apache/spark:latest
-    container_name: apache-spark-worker
+    container_name: spark-worker
     command: "/opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077"
     depends_on:
       - spark-master
@@ -52,12 +57,16 @@ services:
       - SPARK_WORKER_CORES=2
       - SPARK_RPC_MESSAGE_MAX_SIZE=512  # Set to a higher value as needed
       - SPARK_MAX_REMOTE_BLOCK_SIZE_FETCH_TO_MEM=134217728  # 128MB
+      # - SPARK_LOCAL_IP=spark-worker
+      # - SPARK_WORKER_HOST=spark-worker
+      # - SPARK_DRIVER_BIND_ADDRESS=spark-worker
+      - SPARK_PUBLIC_DNS=spark-net
     networks:
       - spark-net
 
   spark-thrift:
     image: apache/spark:latest
-    container_name: apache-spark-thrift
+    container_name: spark-thrift
     command: "/opt/spark/bin/spark-submit --class org.apache.spark.sql.hive.thriftserver.HiveThriftServer2 --master spark://spark-master:7077"
     depends_on:
       - spark-master
@@ -73,6 +82,10 @@ services:
       - SPARK_MAX_REMOTE_BLOCK_SIZE_FETCH_TO_MEM=134217728  # 128MB
       - HADOOP_CONF_DIR=/opt/spark/conf
       - HIVE_CONF_DIR=/opt/spark/conf
+      # - SPARK_LOCAL_IP=spark-thrift
+      # - SPARK_THRIFT_HOST=spark-thrift
+      # - SPARK_DRIVER_BIND_ADDRESS=spark-thrift
+      - SPARK_PUBLIC_DNS=spark-net
 
     networks:
       - spark-net
