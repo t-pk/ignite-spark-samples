@@ -1,7 +1,3 @@
-from pyspark.sql import SparkSession
-
-spark = SparkSession.builder.appName("test").master("local").getOrCreate() 
-
 from pyignite import Client
 
 client = Client()
@@ -39,27 +35,3 @@ CITY_DATA = [
 
 for row in CITY_DATA:
     client.sql(CITY_INSERT_QUERY, query_args=row)
-
-CITY_SELECT_QUERY = "SELECT * FROM City"
-
-cities = client.sql(CITY_SELECT_QUERY)
-for city in cities:
-    print(*city)
-
-
-# Query Ignite data
-query = "SELECT * FROM City"
-result = client.sql(query)
-
-# Define DataFrame schema and create DataFrame
-columns = ["ID", "Name", "CountryCode", "District", "Population"]
-df = spark.createDataFrame(result, columns)
-
-# Show DataFrame
-df.show()
-
-# Stop Spark session
-spark.stop()
-
-# Disconnect from Ignite
-client.close()
