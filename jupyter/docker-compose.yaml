@@ -15,20 +15,22 @@ services:
     networks:
       - spark-net
     volumes:
-      - ../../../service-docker-compose/volumes/apache-ignite:/data
+      - ../../../service-docker-compose/volumes/apache-ignite:/data # Mount volume
 
   spark-notebook:
     image: jupyter/pyspark-notebook
     container_name: pyspark-notebook
     ports:
-      - "8888:8888"
+      - "8800:8888"
       - "4040:4040"
       - "8080:8080"
       - "10000:10000"
     environment:
+      - GRANT_SUDO=yes
       - PYSPARK_ALLOW_INSECURE_GATEWAY=1
+      - JUPYTER_TOKEN=your_static_token
     volumes:
-      - ../../../service-docker-compose/volumes/jupyter:/home/jovyan/work  # Mount local data directory to container
+      - ../../../service-docker-compose/volumes/jupyter:/home/jovyan/work  # Mount volume
 
     networks:
       - spark-net
