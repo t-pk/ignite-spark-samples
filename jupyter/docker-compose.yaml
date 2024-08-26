@@ -5,37 +5,34 @@ services:
     image: apacheignite/ignite:latest
     container_name: apache-ignite
     ports:
-      - "10800:10800"  # Port for Ignite native communication
-      - "47100:47100"  # Port for Ignite discovery
-      - "47500:47500"  # Port for Ignite discovery
-      - "49112:49112"  # Port for Ignite JMX monitoring
+      - "10800:10800"
+      - "47100:47100"
+      - "47500:47500"
+      - "49112:49112"
     environment:
       - IGNITE_QUIET=false  # Enables logging output
-      # - IGNITE_USER=username  # Replace with your Ignite username
-      # - IGNITE_PASSWORD=password  # Replace with your Ignite password
       - IGNITE_CONFIG_URL=https://raw.githubusercontent.com/apache/ignite/master/examples/config/example-ignite.xml
     networks:
       - spark-net
-
-    # volumes:
-    #   - ../../../service-docker-compose/volumes/apache-ignite:/data  # Mount local ignite-data directory to container
+    volumes:
+      - ../../../service-docker-compose/volumes/apache-ignite:/data
 
   spark-notebook:
     image: jupyter/pyspark-notebook
     container_name: pyspark-notebook
     ports:
-      - "8888:8888"  # Port for Jupyter Notebook
+      - "8888:8888"
       - "4040:4040"
       - "8080:8080"
-      - "10000:10000"  # Port for Spark Thrift Server
+      - "10000:10000"
     environment:
-      - PYSPARK_ALLOW_INSECURE_GATEWAY=1  # Allows insecure connection to Spark
-
-    # volumes:
-    #   - ../../../service-docker-compose/volumes/jupyter:/home/jovyan/work  # Mount local data directory to container
+      - PYSPARK_ALLOW_INSECURE_GATEWAY=1
+    volumes:
+      - ../../../service-docker-compose/volumes/jupyter:/home/jovyan/work  # Mount local data directory to container
 
     networks:
       - spark-net
+
 networks:
   spark-net:
     driver: bridge
