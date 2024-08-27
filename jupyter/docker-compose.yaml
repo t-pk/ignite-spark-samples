@@ -1,5 +1,9 @@
 version: '3.8'
 
+networks:
+  spark-net:
+    driver: bridge
+
 services:
   apache-ignite:
     image: apacheignite/ignite:latest
@@ -10,12 +14,12 @@ services:
       - "47500:47500"
       - "49112:49112"
     environment:
-      - IGNITE_QUIET=false  # Enables logging output
+      - IGNITE_QUIET=false
       - IGNITE_CONFIG_URL=https://raw.githubusercontent.com/apache/ignite/master/examples/config/example-ignite.xml
     networks:
       - spark-net
     volumes:
-      - ../../../service-docker-compose/volumes/apache-ignite:/data # Mount volume
+      - ../../../service-docker-compose/volumes/apache-ignite:/data
 
   spark-notebook:
     image: jupyter/pyspark-notebook
@@ -28,13 +32,10 @@ services:
     environment:
       - GRANT_SUDO=yes
       - PYSPARK_ALLOW_INSECURE_GATEWAY=1
-      - JUPYTER_TOKEN=your_static_token
+      - JUPYTER_TOKEN=12345
+
     volumes:
-      - ../../../service-docker-compose/volumes/jupyter:/home/jovyan/work  # Mount volume
+      - ../../../service-docker-compose/volumes/jupyter:/home/jovyan/work
 
     networks:
       - spark-net
-
-networks:
-  spark-net:
-    driver: bridge
